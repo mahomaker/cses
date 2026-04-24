@@ -1,72 +1,27 @@
 #include <stdio.h>
-#include <assert.h>
 
-#define N   200000
+#define int long long
+const int set[2] = {0, ~0};
 
-int buffer[N];
-int input[N];
-int n;
-
-#define min(x, y) ((x) > (y) ? (y) : (x))
-
-void merge(int ls, int rs, int re) {
-        int lp = 0;
-        int rp = 0;
-        int cnt = 0;
-        while (ls + lp < rs && rs + rp < re) {
-                if (input[ls + lp] > input[rs + rp]) {
-                        buffer[lp + rp] = input[rs + rp];
-                        rp++;
-                        cnt++;
-                } else {
-                        buffer[lp + rp] = input[ls + lp];
-                        lp++;
-                        cnt++;
-                }
+char buffer[1 << 22];
+int inp_ptr = 0;
+int intput() {
+        int ret = 0;
+        char c;
+        while ((c = buffer[inp_ptr++]) && c != ' ' && c != '\n') {
+                ret = (ret * 10) + c - '0';
         }
-
-        while (ls + lp < rs) {
-                buffer[lp + rp] = input[ls + lp];
-                lp++;
-                cnt++;
-        }
-
-        while (rs + rp < re) {
-                buffer[lp + rp] = input[rs + rp];
-                rp++;
-                cnt++;
-        }
-
-        for (int i = 0;i < lp + rp;i++) {
-                input[ls + i] = buffer[i];
-                buffer[i] = -1;
-        }
+        return ret;
 }
 
-void merge_sort() {
-        for (int L = 0;L <= 19;L++) {
-                int cnt = 1 << L;
-                if (cnt >= n) {
-                        return;
-                }
-                for (int i = 0;i < n;i += 2*cnt) {
-                        merge(i, i + cnt, min(i + 2*cnt, n));
-                }
+
+signed main() {
+        buffer[fread(buffer, 1, sizeof(buffer), stdin)] = 1;
+        int t = intput();
+        while (t--) {
+                int y = intput(), x = intput();
+                int n = x > y ? x : y;
+                int m = n % 2 == 1;
+                printf("%lld\n", n*n - n + 1 + (2*m-1) * ((set[y != n] & ((n - y))) + (set[x != n] & (- n + x))));
         }
-}
-
-int main() {
-        scanf("%d", &n);
-
-        for (int i = 0;i < n;i++) scanf("%d", &input[i]);
-
-        merge_sort();
-
-        int cnt = 1;
-
-        for (int i = 1;i < n;i++) {
-                cnt += (input[i] != input[i - 1]);
-        }
-
-        printf("%d\n", cnt);
 }
